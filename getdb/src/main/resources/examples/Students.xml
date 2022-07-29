@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<students>
+  <student>
+    <sno>1</sno>
+    <sname>raju</sname>
+    <m1>10</m1>
+    <m2>20</m2>
+  </student>
+  <student>
+    <sno>2</sno>
+    <sname>rani</sname>
+    <m1>10</m1>
+    <m2>20</m2>
+  </student>
+  <student>
+    <sno>3</sno>
+    <sname>JrRani</sname>
+    <m1>10</m1>
+    <m2>20</m2>
+  </student>
+  <student>
+	<sno>4</sno>
+    <sname>JrRaju</sname>
+    <m1>10</m1>
+    <m2>20</m2>
+  </student>
+</students>

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<students>
+  <student>
+    <sno>1</sno>
+    <sname>raju</sname>
+    <m1>10</m1>
+    <m2>20</m2>
+  </student>
+</students>

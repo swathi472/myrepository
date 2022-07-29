@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="output" format="xml">
+      <types:example format="xml" element="students" location="examples/Student.xml"/>
+    </types:type>
+    <types:type name="ouy" format="json">
+      <types:shape format="weave" example="examples/Student-2.json"><![CDATA[%dw 2.0
+
+type ouy = {|
+  sno: String, 
+  sname: String, 
+  m1: String, 
+  m2: String
+|} {"example": "{\\\"sno\\\":\\\"1\\\",\\\"sname\\\":\\\"raju\\\",\\\"m1\\\":\\\"10\\\",\\\"m2\\\":\\\"20\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="out" format="xml">
+      <types:example format="xml" element="students" location="examples/Students.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#450f71f4-0d54-4862-9fc2-e4da8c23c72c">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="out"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2c67bb31-fb03-44bb-837b-ac052db7386a">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="out"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

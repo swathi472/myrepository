@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="613bbfbb-3ddd-46a2-a462-88ad623dec27" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="edd79f64-bf0b-40d2-b949-5289ea9be4cf" >
+		<db:oracle-connection host="localhost" user="muledemo11" password="muledemo11" instance="xe"/>
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="c4bbe145-b44b-4731-8923-dbcc2cdac2a7" file="config\config-dev.yaml" />
+	<flow name="getdbFlow" doc:id="1fde9556-1f7a-49bb-b67b-279d0a633867" >
+		<http:listener doc:name="Listener" doc:id="56dbbf2a-34c9-4a6c-aec6-f7bfdae29ac5" config-ref="HTTP_Listener_config" path="/student"/>
+		<logger level="INFO" doc:name="Logger" doc:id="36cd2510-69cc-4e20-ac44-b9f7b41badb1" message="${log.msg1}"/>
+		<set-variable value="#[attributes.queryParams.format]" doc:name="Set Variable" doc:id="68a785b1-5840-4f41-8125-94c397347669" variableName="format"/>
+		<db:select doc:name="Select" doc:id="45f8549e-dc8e-4785-ab0a-7724809592fc" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from student]]></db:sql>
+		</db:select>
+		<choice doc:name="Choice" doc:id="824f70fa-b25e-4c36-9107-400aeaabe899" >
+			<when expression="#[vars.format == 'xml']">
+				<ee:transform doc:name="Transform Message" doc:id="2c67bb31-fb03-44bb-837b-ac052db7386a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	students: {
+		(payload map ( payload01 , indexOfPayload01 ) -> {
+			student: {
+				sno: payload01.SNO,
+				sname: payload01.SNAME,
+				m1: payload01.M1,
+				m2: payload01.M2
+			}
+		})
+	}
+}	]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="450f71f4-0d54-4862-9fc2-e4da8c23c72c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	students: {
+		(payload map ( payload01 , indexOfPayload01 ) -> {
+			student: {
+				sno: payload01.SNO,
+				sname: payload01.SNAME,
+				m1: payload01.M1,
+				m2: payload01.M2
+			}
+		})
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="eb6365af-d520-4ed7-93d0-be9d6dc509e8" message="${log.msg2}"/>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="74dc2274-b0d9-4b8c-a3c9-d88e4b2d2180" >
+				<set-payload value="error handler..........onerror continue" doc:name="Set Payload" doc:id="66c73b90-49c9-4867-88e1-120c24bda4d3" />
+				<logger level="INFO" doc:name="Logger" doc:id="46fb1ee1-fa3f-4d7c-a278-a1b68380cf83" message="am from error handler"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
